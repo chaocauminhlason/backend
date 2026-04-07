@@ -11,7 +11,7 @@ const createBlog = ({ title, avatar, content }) => {
         });
         return;
       }
-      const imageData = saveImage(avatar, "blog");
+      const imageData = await saveImage(avatar, "blog");
       const blog = Blog.create({
         title: title,
         avatar: {
@@ -106,7 +106,7 @@ const updateBlog = (id, props) => {
       const blog = await findByIdOrSlug(id);
       if (!avatar.includes("/uploads/")) {
         deleteImage(blog.avatar.public_id, "blog");
-        const imageData = saveImage(avatar, "blog");
+        const imageData = await saveImage(avatar, "blog");
         blog.avatar = {
           public_id: imageData.public_id,
           url: imageData.url,

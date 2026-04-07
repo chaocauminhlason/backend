@@ -11,7 +11,7 @@ const createCategory = (name, image) => {
         });
         return;
       }
-      const imageData = saveImage(image, "category");
+      const imageData = await saveImage(image, "category");
       const category = Category.create({
         name: name,
         image: {
@@ -66,7 +66,7 @@ const updateCategory = (id, props) => {
       }
       if (image && image.includes("data:")) {
         deleteImage(category.image.public_id, "category");
-        const imageData = saveImage(image, "category");
+        const imageData = await saveImage(image, "category");
         category.image = {
           public_id: imageData.public_id,
           url: imageData.url,

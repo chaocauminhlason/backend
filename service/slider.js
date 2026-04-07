@@ -3,7 +3,7 @@ const Slider = require("../models/slider");
 const createSlider = (image) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const imageData = saveImage(image, "slider");
+      const imageData = await saveImage(image, "slider");
       const slider = Slider.create({
         image: {
           public_id: imageData.public_id,
@@ -44,7 +44,7 @@ const updateSlider = (id, { image }) => {
         return;
       }
       deleteImage(slider.image.public_id, "slider");
-      const imageData = saveImage(image, "slider");
+      const imageData = await saveImage(image, "slider");
       slider.image = {
         public_id: imageData.public_id,
         url: imageData.url,
