@@ -1,69 +1,51 @@
-const fs = require("fs");
-const path = require("path");
+const cloudinary = require("cloudinary").v2;
+require("dotenv").config();
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, "../public/uploads");
-const subdirs = ["category", "product", "blog", "slider"];
-
-subdirs.forEach((subdir) => {
-  const dir = path.join(uploadsDir, subdir);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+// Configure cloudinary with values from environment variables
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 /**
- * Save a base64 image to local storage
+ * Save a base64 image to Cloudinary
  * @param {string} base64String - Base64 encoded image string
  * @param {string} folder - Folder name (category, product, blog, slider)
- * @returns {Object} - { public_id, url }
+ * @returns {Promise<Object>} - { public_id, url }
  */
-const saveImage = (base64String, folder) => {
+const saveImage = async (base64String, folder) => {
   try {
-    // Extract base64 data
-    const matches = base64String.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
-    if (!matches || matches.length !== 3) {
-      throw new Error("Invalid base64 image format");
-    }
-
-    const data = matches[2];
-    const buffer = Buffer.from(data, "base64");
-
-    // Generate unique filename
-    const timestamp = Date.now();
-    const random = Math.random().toString(36).substring(7);
-    const filename = `${folder}_${timestamp}_${random}.png`;
-
-    // Save file
-    const filepath = path.join(uploadsDir, folder, filename);
-    fs.writeFileSync(filepath, buffer);
+    // Determine the folder path in Cloudinary (e.g. CloneTopZone/Product)
+    const folderPath = `CloneTopZone/${folder.charAt(0).toUpperCase() + folder.slice(1)}`;
+    
+    // Upload directly using Cloudinary's built-in base64 support
+    const result = await cloudinary.uploader.upload(base64String, {
+      folder: folderPath,
+    });
 
     return {
-      public_id: filename.replace(".png", ""),
-      url: `/uploads/${folder}/${filename}`,
+      public_id: result.public_id,
+      url: result.secure_url,
     };
   } catch (error) {
-    throw new Error(`Failed to save image: ${error.message}`);
+    throw new Error(`Failed to save image to Cloudinary: ${error.message}`);
   }
 };
 
 /**
- * Delete an image from local storage
- * @param {string} public_id - The filename without extension
+ * Delete an image from Cloudinary
+ * @param {string} public_id - The Cloudinary public_id
  * @param {string} folder - Folder name (category, product, blog, slider)
  */
-const deleteImage = (public_id, folder) => {
+const deleteImage = async (public_id, folder) => {
   try {
-    if (!public_id || !folder) {
+    if (!public_id) {
       return; // Skip if no public_id provided
     }
 
-    const filename = `${public_id}.png`;
-    const filepath = path.join(uploadsDir, folder, filename);
-
-    if (fs.existsSync(filepath)) {
-      fs.unlinkSync(filepath);
-    }
+    // Destroy the image on Cloudinary
+    await cloudinary.uploader.destroy(public_id);
   } catch (error) {
     console.warn(`Failed to delete image: ${error.message}`);
   }
