@@ -1,0 +1,42 @@
+const category = require("./category");
+const user = require("./user");
+const slider = require("./slider");
+const product = require("./product");
+const order = require("./order");
+const blog = require("./blog");
+const vnpay = require("./vnpay");
+const recommendation = require("./recommendation");
+const settings = require("./settings");
+const miniGame = require("./minigame");
+const reward = require("./reward");
+const adminPromoCode = require("./adminPromoCode");
+const event = require("./event");
+const loyalty = require("./loyalty");
+const role = require("./role");
+const permission = require("./permission");
+const branch = require("./branch");
+
+const initialRouter = (app) => {
+  app.use("/api/v1/user", user);
+  app.use("/api/v1/category", category);
+  app.use("/api/v1/product", product);
+  app.use("/api/v1/slider", slider);
+  app.use("/api/v1/order", order);
+  app.use("/api/v1/blog", blog);
+  app.use("/api/v1/blog", blog);
+  app.use("/api/v1/recommendation", recommendation);
+  app.use("/api/v1/checkout", vnpay);
+  app.use("/api/v1/settings", settings);
+  app.use("/api/v1/minigames", miniGame);
+  app.use("/api/v1/rewards", reward);
+  app.use("/api/v1/loyalty", loyalty);
+  app.use("/api/v1/admin", adminPromoCode);
+  app.use("/api/v1/event", event);
+  app.use("/api/v1/role", role);
+  app.use("/api/v1/permission", permission);
+  app.use("/api/v1/branches", branch);
+  app.use("/", (req, res) => {
+    return res.send("Server on");
+  });
+};
+module.exports = initialRouter;

@@ -1,0 +1,12 @@
+const Joi = require("joi");
+exports.string = Joi.string().allow(null, "");
+exports.stringReq = Joi.string().required().min(1);
+exports.numberReq = Joi.number().required();
+exports.priceReq = Joi.number().required().min(0);
+exports.quantityReq = Joi.number().required().min(0).integer();
+exports.discountReq = Joi.number().required().min(0).max(100);
+exports.number = Joi.string().allow(null, "");
+exports.array = Joi.array().allow(null, "");
+exports.arrayReq = Joi.array().required().min(1);
+exports.binaryReq = Joi.binary().required();
+exports.objectReq = Joi.object().required();
